@@ -1,0 +1,105 @@
+:root {
+  /* === ОСНОВНЫЕ ЦВЕТА (ТОВАРЫ — ЗЕЛЁНЫЕ) === */
+  --bg-color: #EDF7EB;
+  --text-color: #333333;
+  --text-muted: #777777;
+  --text-muted-light: #888888;
+  --text-muted-lighter: #999999;
+  --card-bg: #ffffff;
+  --primary-color: #27AA5A;
+  --primary-hover: #1e8c48;
+  --border-color: #e0e0e0;
+  --header-bg: #4EAE64;
+  --header-bg-dark: #3d9251;
+  --header-text: #ffffff;
+  --nav-bg: #DFF0DB;
+  --nav-text: #666666;
+  --nav-active: #27AA5A;
+  --input-bg: #ffffff;
+  --input-text: #333333;
+  --badge-bg: #e6f4ea;
+  --badge-text: #137333;
+  --danger-color: #d93838;
+  --success-color: #27AA5A;
+  --body-bg: #222222;
+  --app-border: #333333;
+  --purchased-bg: #eef2f5;
+  --purchased-border: #cbd5e1;
+  --btn-dark: #555555;
+  --btn-dark-hover: #333333;
+  --btn-secondary-bg: #e2e8f0;
+  --btn-secondary-border: #cbd5e1;
+  --btn-secondary-hover: #d1d5db;
+  --pencil-bg: #fff9e6;
+  --pencil-bg-dark: #fff3cc;
+  --pencil-border: #e0a800;
+  --pencil-color: #d97706;
+  --banner-green: #4EAE64;
+  --banner-green-dark: #3d9251;
+  --banner-orange: #fb923c;
+  --banner-orange-dark: #ea580c;
+  --curl-green: #4EAE64;
+  --curl-green-dark: #3d9251;
+  --curl-green-shadow: #f0761f;
+  --curl-orange: #fb923c;
+  --curl-orange-dark: #ea580c;
+  --curl-orange-shadow: #43a057;
+  --multi-store-color: #d93838;
+  --add-product-btn-bg: #27AA5A;
+  --scrollbar-color: #81C784;
+  --vol-light: rgba(255,255,255,0.9);
+  --vol-dark: rgba(0,0,0,0.12);
+  --vol-dark-strong: rgba(0,0,0,0.18);
+  --gold-1: #E8C441; --gold-2: #D4A828; --gold-3: #B8901E; --gold-4: #F5E6A8;
+  --gold-glow: rgba(200, 160, 50, 0.35); --gold-soft: rgba(200, 160, 50, 0.08); --gold-dark: #9A7820;
+  --receipt-bg: #fde7cd; --receipt-bg-dark: #f7cf9f; --receipt-border: #eeaf68; --receipt-text: #b45309;
+  --font-size-base: 14px;
+  --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* === ТЁМНАЯ ТЕМА === */
+[data-theme="dark"] {
+  --bg-color: #121212; --text-color: #e0e0e0; --text-muted: #888888; --text-muted-light: #777777; --text-muted-lighter: #666666;
+  --card-bg: #1e1e1e; --border-color: #2c2c2c; --header-bg: #1f1f1f; --header-bg-dark: #1a1a1a;
+  --nav-bg: #1e1e1e; --nav-text: #aaaaaa; --input-bg: #2d2d2d; --input-text: #ffffff;
+  --badge-bg: #0b3c23; --badge-text: #81c995; --danger-color: #f28b82;
+  --purchased-bg: #26292e; --purchased-border: #3a3f47;
+  --btn-secondary-bg: #3a3a3a; --btn-secondary-border: #4a4a4a; --btn-secondary-hover: #4a4a4a;
+  --vol-light: rgba(255,255,255,0.05); --vol-dark: rgba(0,0,0,0.5); --vol-dark-strong: rgba(0,0,0,0.7);
+  --gold-1: #E5C166; --gold-glow: rgba(200, 160, 50, 0.45); --gold-soft: rgba(200, 160, 50, 0.05);
+}
+
+/* === РЕЖИМ ЛЕКАРСТВ (СИРЕНЕВЫЙ) === */
+.app-wrapper.meds-mode {
+  --primary-color: #9C55C1; --primary-hover: #7B3FA0; --success-color: #9C55C1;
+  --bg-color: #F1EDF8; --header-bg: #BA7AD1; --header-bg-dark: #9C55C1;
+  --nav-bg: #E4D8F3; --nav-active: #9C55C1; --border-color: #D8C8E8;
+  --badge-bg: rgba(156, 85, 193, 0.16); --badge-text: #7B3FA0;
+  --add-product-btn-bg: #9C55C1; --scrollbar-color: #9D81B1;
+  --purchased-bg: #E8E0F0; --purchased-border: #D0C0E0;
+  --banner-green: #BA7AD1; --banner-green-dark: #9C55C1;
+  --curl-green: #BA7AD1; --curl-green-dark: #9C55C1; --curl-green-shadow: #9D81B1;
+}
+[data-theme="dark"] .app-wrapper.meds-mode {
+  --bg-color: #1E1628; --card-bg: #2A1F35; --border-color: #3D2E4F;
+  --nav-bg: #2A1F35; --text-color: #E8E0F0; --input-bg: #2A1F35; --purchased-bg: #2A1F35;
+}
+
+/* === ОБЪЁМНЫЙ СТИЛЬ === */
+.volumetric .card { background: var(--card-bg); border: none; box-shadow: 6px 6px 14px var(--vol-dark), -4px -4px 10px var(--vol-light), inset 0 1px 0 rgba(255,255,255,0.5); }
+[data-theme="dark"].volumetric .card { box-shadow: 6px 6px 14px var(--vol-dark), -4px -4px 10px var(--vol-light), inset 0 1px 0 rgba(255,255,255,0.06); }
+.volumetric .btn { background-color: var(--primary-color); border: none; box-shadow: 4px 4px 10px var(--vol-dark), -3px -3px 8px var(--vol-light), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.15); }
+.volumetric .btn:active { transform: translateY(1px); box-shadow: 2px 2px 5px var(--vol-dark), -2px -2px 4px var(--vol-light), inset 0 2px 4px rgba(0,0,0,0.25); }
+.volumetric .btn-3d-green { background: linear-gradient(145deg, var(--primary-color), var(--primary-hover)); box-shadow: 4px 4px 10px var(--vol-dark-strong), -3px -3px 8px var(--vol-light), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.2); }
+.volumetric .btn-3d-green:active { transform: translateY(1px); box-shadow: 2px 2px 5px var(--vol-dark-strong), inset 0 2px 5px rgba(0,0,0,0.3); }
+.volumetric .btn-3d-dark { background: linear-gradient(145deg, var(--btn-dark), var(--btn-dark-hover)); box-shadow: 4px 4px 10px var(--vol-dark-strong), -3px -3px 8px var(--vol-light), inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -2px 4px rgba(0,0,0,0.3); }
+.volumetric .btn-3d-dark:active { transform: translateY(1px); box-shadow: 2px 2px 5px var(--vol-dark-strong), inset 0 2px 5px rgba(0,0,0,0.4); }
+.volumetric .icon-btn { background: var(--card-bg); border: none; box-shadow: 3px 3px 7px var(--vol-dark), -2px -2px 5px var(--vol-light), inset 0 1px 0 rgba(255,255,255,0.5); }
+.volumetric .icon-btn:active { transform: translateY(1px); box-shadow: inset 2px 2px 5px var(--vol-dark), inset -2px -2px 5px var(--vol-light); }
+.volumetric input, .volumetric select { background: var(--input-bg); border: none; box-shadow: inset 3px 3px 6px var(--vol-dark), inset -2px -2px 5px var(--vol-light); }
+.volumetric header { background: linear-gradient(145deg, var(--header-bg), var(--header-bg-dark)); box-shadow: 0 6px 14px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -2px 4px rgba(0,0,0,0.15); }
+[data-theme="dark"].volumetric header { background: linear-gradient(145deg, #2a2a2a, #1a1a1a); }
+.volumetric .comparison-banner { box-shadow: 6px 6px 14px rgba(0,0,0,0.25), -3px -3px 8px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.15); }
+.volumetric nav { background: var(--nav-bg); border-top: none; box-shadow: 0 -4px 10px var(--vol-dark), inset 0 1px 0 var(--vol-light); }
+.volumetric .category-tile { box-shadow: 4px 4px 10px var(--vol-dark), -3px -3px 8px var(--vol-light), inset 0 1px 0 rgba(255,255,255,0.5); border: none; }
+.volumetric .purchased-badge { box-shadow: 4px 4px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.2); }

@@ -1,0 +1,217 @@
+/* SmartPrice — ui-fixes.css */
+.comparison-toggle-row { display: none !important; }
+.cart-type-btn .btn-icon { filter: none !important; opacity: 1 !important; }
+.app-logo { width: 2.6rem; height: 2.6rem; border-radius: .6rem; object-fit: cover; background: #fff; padding: .18rem; box-shadow: 0 2px 8px rgba(0,0,0,.25); flex-shrink: 0; margin: -0.3rem 0; }
+/* ============================================
+СПИСОК: возврат высоты строки, картинка почти во всю высоту, симметрия
+============================================ */
+.cat-header-row {
+display: flex !important;
+justify-content: space-between !important;
+align-items: center !important;
+min-height: 3.5rem !important;
+}
+.cat-header-left {
+display: flex !important;
+align-items: center !important;
+gap: 0.3rem !important;
+}
+.cat-header-name {
+font-weight: 700 !important;
+}
+.cat-header-icon .cat-ico,
+.cat-header-icon img.cat-ico {
+width: 3.5rem !important;
+height: 3.5rem !important;
+object-fit: contain !important;
+display: block !important;
+border-radius: 0.35rem !important;
+flex-shrink: 0 !important;
+}
+.cat-header-count {
+background: var(--bg-color) !important;
+color: var(--text-color) !important;
+font-size: 1.2rem !important;
+font-weight: 700 !important;
+padding: 0.3rem 0.84rem !important;
+border-radius: 0.75rem !important;
+min-width: 2.2rem !important;
+text-align: center !important;
+}
+/* ============================================
+2. ПЛИТКА: картинка больше, плитка НЕ увеличивается, кружок в углу
+============================================ */
+.categories-grid-view {
+display: grid !important;
+grid-template-columns: repeat(3, 1fr) !important;
+gap: 0.625rem !important;
+padding: 0 !important;
+width: 100% !important;
+box-sizing: border-box !important;
+}
+.category-tile {
+padding: 0.25rem !important;
+overflow: hidden !important;
+position: relative !important;
+aspect-ratio: 1 !important;
+min-height: 0 !important;
+max-height: none !important;
+width: 100% !important;
+box-sizing: border-box !important;
+}
+.category-tile .tile-icon {
+width: 6rem !important;
+height: 6rem !important;
+margin-top: 0.3rem !important;
+margin-bottom: 0.15rem !important;
+display: flex !important;
+align-items: center !important;
+justify-content: center !important;
+flex-shrink: 0 !important;
+}
+.category-tile .tile-icon .cat-ico {
+width: 100% !important;
+height: 100% !important;
+object-fit: contain !important;
+border-radius: 0.4rem !important;
+}
+.tile-name-row {
+display: flex !important;
+align-items: center !important;
+justify-content: center !important;
+gap: 0.2rem !important;
+width: 100% !important;
+}
+.category-tile .tile-name {
+font-size: 0.85rem !important;
+font-weight: 700 !important;
+line-height: 1.1 !important;
+overflow: hidden !important;
+text-overflow: ellipsis !important;
+white-space: nowrap !important;
+-webkit-line-clamp: unset !important;
+-webkit-box-orient: unset !important;
+}
+.category-tile .tile-count {
+position: absolute !important;
+top: 0.15rem !important;
+right: 0.15rem !important;
+flex-shrink: 0 !important;
+font-size: 1.28rem !important;
+font-weight: 800 !important;
+padding: 0.22rem 0.68rem !important;
+margin-left: 0 !important;
+box-shadow: 0 0 0 2px #ffffff !important;
+border-radius: 0.75rem !important;
+z-index: 5 !important;
+}
+/* ============================================
+ОСТАЛЬНЫЕ МЕСТА
+============================================ */
+.cart-category-header .cat-ico { width: 1.5rem !important; height: 1.5rem !important; vertical-align: -0.32rem; border-radius: 0.3rem; margin-right: 0.3rem; }
+.select-product-icon .cat-ico { width: 2.5rem !important; height: 2.5rem !important; vertical-align: baseline; border-radius: 0.35rem; }
+#category-modal-title .cat-ico { width: 1.8rem !important; height: 1.8rem !important; vertical-align: -0.4rem; border-radius: 0.3rem; }
+/* ============================================
+СТРАНИЦА 3: НАЗВАНИЕ И ПЕРЕКЛЮЧАТЕЛЬ НА ОДНОЙ СТРОКЕ
+(переключатель теперь того же размера, что и на 2-й странице — свои уменьшающие стили удалены)
+============================================ */
+.prices-sticky-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+.prices-sticky-header h2 { order: 1; margin-bottom: 0 !important; font-size: 1.35rem !important; font-weight: 800 !important; min-width: 0; }
+.prices-sticky-header .prices-type-toggle { order: 2; width: max-content; margin: 0; flex-shrink: 0; }
+/* ============================================
+УГОЛОК: ОДНА ВЫГЛЯДЫВАЮЩАЯ КАРТОЧКА
+============================================ */
+.comparison-banner { position: relative; overflow: hidden; }
+.comparison-banner.banner-green { box-shadow: .35rem .3rem .8rem rgba(0,0,0,.20) !important; }
+.comparison-banner.banner-orange { box-shadow: .35rem .3rem .8rem rgba(0,0,0,.20) !important; }
+.app-wrapper.meds-mode { --curl-orange: #f4a865 !important; --curl-orange-dark: #ec8f3e !important; --curl-orange-shadow: #9D81B1 !important; }
+.banner-curl { position: absolute; top: 0; right: 0; width: 3.6rem; height: 3.6rem; pointer-events: none; z-index: 3; transition: transform .15s ease; transform-origin: top right; background: linear-gradient(225deg, transparent 0%, transparent 45%, rgba(0,0,0,.32) 45%, rgba(0,0,0,.26) 70%, rgba(0,0,0,.14) 88%, rgba(0,0,0,.05) 100%); }
+.comparison-banner:active .banner-curl { transform: scale(1.06); }
+.banner-curl::before { content: ''; position: absolute; inset: 0; }
+.curl-under-orange::before { background: linear-gradient(225deg, var(--curl-orange, #fb923c) 0%, var(--curl-orange-dark, #ea580c) 40%, var(--curl-orange-dark, #ea580c) 56%, transparent 56%); }
+.curl-under-green::before { background: linear-gradient(225deg, var(--curl-green, #4EAE64) 0%, var(--curl-green-dark, #3d9251) 40%, var(--curl-green-dark, #3d9251) 56%, transparent 56%); }
+.banner-curl::after { content: ''; position: absolute; inset: 0; background: linear-gradient(225deg, transparent 0%, transparent 45%, rgba(0,0,0,.28) 45%, rgba(0,0,0,.28) 46.5%, #ffffff 46.5%, #f5f5f4 60%, #e6e6e3 72%, #d0d0cc 85%, #c2c2be 96%, #d6d6d2 100%); border-bottom-left-radius: 34%; filter: drop-shadow(-3px 4px 4px rgba(0,0,0,.28)); }
+/* ============================================
+ВКЛАДКИ НА 1-Й И 4-Й СТРАНИЦАХ
+============================================ */
+.ptype-tabs-row { gap: .5rem; }
+.ptype-slot { display: flex; align-items: center; justify-content: center; gap: .4rem; flex: 1 1 0; min-width: 0; border: none; cursor: pointer; font-family: var(--font-family); font-size: 1rem; line-height: 1.2; padding: .7rem .5rem; position: relative; transition: background .15s ease, color .15s ease; }
+.ptype-slot .btn-icon { font-size: 1.15rem; line-height: 1; display: inline-flex; }
+.ptype-slot .btn-icon svg { width: 1.15rem; height: 1.15rem; display: block; }
+.ptype-slot.ptype-heading { background: var(--card-bg); color: var(--primary-color); font-weight: 800; border-radius: .6rem .6rem 0 0; box-shadow: 0 2px 6px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,.5); }
+.ptype-slot.ptype-heading::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: .22rem; background: var(--primary-color); }
+.ptype-slot.ptype-btn { background: var(--border-color); color: var(--text-muted); font-weight: 700; border-radius: .6rem; }
+/* ============================================
+ЕДИНЫЙ ШРИФТ НАДПИСЕЙ ВО ВСЕХ ОКНАХ ТОВАРОВ/ЛЕКАРСТВ
+============================================ */
+#product-modal h4,
+#product-modal .prod-meta-row,
+#product-modal .prod-meta-row span,
+#add-product-modal label:not(.btn-3d-green):not(.btn-3d-dark),
+#edit-product-modal label:not(.btn-3d-green):not(.btn-3d-dark) {
+font-family: var(--font-family) !important;
+font-size: 0.85rem !important;
+font-weight: 600 !important;
+}
+/* ============================================
+ПОЛОСЫ НАЗВАНИЯ В КАРТОЧКАХ — НЕ НАЕЗЖАЮТ И НЕ ВЫХОДЯТ
+============================================ */
+.product-modal-top .close-modal-btn { z-index: 5; }
+.product-modal-info { padding-right: 2rem !important; }
+.product-modal-info .prod-name-input { max-width: 100% !important; box-sizing: border-box !important; }
+.new-product-name-row input { width: 100% !important; box-sizing: border-box !important; max-width: 100% !important; }
+.new-product-right { max-width: 100% !important; overflow: hidden !important; }
+.new-product-top { grid-template-columns: 8rem 1fr !important; }
+.edit-pencil-btn { margin-left: 0 !important; }
+.product-modal-pencil-row { max-width: 100% !important; box-sizing: border-box !important; padding-right: 0 !important; }
+/* ============================================
+РЕЖИМ ЛЕКАРСТВ (СИРЕНЕВЫЙ)
+============================================ */
+.app-wrapper.meds-mode {
+--primary-color: #9C55C1;
+--primary-hover: #7B3FA0;
+--success-color: #9C55C1;
+--badge-bg: rgba(156, 85, 193, 0.16);
+--badge-text: #7B3FA0;
+--bg-color: #F1EDF8;
+--header-bg: #BA7AD1;
+--nav-bg: #E4D8F3;
+--nav-active: #9C55C1;
+--border-color: #D8C8E8;
+--purchased-bg: #E8E0F0;
+--purchased-border: #D0C0E0;
+--banner-green: #BA7AD1;
+--banner-green-dark: #9C55C1;
+--curl-green: #BA7AD1;
+--curl-green-dark: #9C55C1;
+--curl-green-shadow: #9D81B1;
+}
+html[data-theme="dark"] .app-wrapper.meds-mode {
+--bg-color: #1E1628;
+--card-bg: #2A1F35;
+--border-color: #3D2E4F;
+--nav-bg: #2A1F35;
+--text-color: #E8E0F0;
+--input-bg: #2A1F35;
+--purchased-bg: #2A1F35;
+}
+.app-wrapper.meds-mode header { background: linear-gradient(145deg, #BA7AD1, #9C55C1); }
+.app-wrapper.meds-mode .purchased-badge { background: linear-gradient(145deg, #9C55C1, #7B3FA0); }
+.app-wrapper.meds-mode .add-product-cart-btn { background: linear-gradient(145deg, #9C55C1, #7B3FA0) !important; }
+.app-wrapper.meds-mode .btn-3d-green { background: linear-gradient(145deg, #9C55C1, #7B3FA0); }
+.app-wrapper.meds-mode .banner-green { background: linear-gradient(145deg, #BA7AD1, #9C55C1); }
+.app-wrapper.meds-mode .divider-label { background: var(--success-color); }
+.app-wrapper.meds-mode .receipt-scan-btn {
+background: linear-gradient(145deg, #fde7cd, #f7cf9f) !important;
+color: #b45309 !important;
+border: 1px solid #eeaf68 !important;
+box-shadow: 0 2px 6px rgba(180,83,9,.18), inset 0 1px 0 rgba(255,255,255,.65) !important;
+}
+.app-wrapper.meds-mode .banner-orange { background: linear-gradient(145deg, #f4a865, #ec8f3e); color: #fff; }
+.app-wrapper.meds-mode .orange-group-wrap { border-color: #eeaf68; background: rgba(247,207,159,.16); }
+[data-theme="dark"] .app-wrapper.meds-mode .orange-group-wrap { background: rgba(247,207,159,.1); }
+.page-anim-next { animation: pageInNext .24s cubic-bezier(.22,1,.36,1); }
+.page-anim-prev { animation: pageInPrev .24s cubic-bezier(.22,1,.36,1); }
+@keyframes pageInNext { from { opacity: 0; transform: translate3d(30px,0,0); } to { opacity: 1; transform: none; } }
+@keyframes pageInPrev { from { opacity: 0; transform: translate3d(-30px,0,0); } to { opacity: 1; transform: none; } }
+[id*="netlify-badge"], [class*="netlify-badge"], a[href*="www.netlify.com"] { display: none !important; }

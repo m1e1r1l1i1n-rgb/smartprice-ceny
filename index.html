@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Сравнение цен в магазинах</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#4EAE64">
+    <link rel="stylesheet" href="variables.css">
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="buttons.css">
+    <link rel="stylesheet" href="cards.css">
+    <link rel="stylesheet" href="modals.css">
+    <link rel="stylesheet" href="animations.css">
+    <link rel="stylesheet" href="ui-fixes.css">
+    <style>
+    .app-wrapper { position: relative; overflow: hidden; }
+    .nav-item svg { transition: transform 0.2s ease, color 0.2s ease; }
+    .nav-products svg { color: #3B82F6 !important; fill: currentColor; }
+    .nav-cart svg { color: #EC4899 !important; fill: currentColor; }
+    .nav-prices svg { color: #F59E0B !important; fill: currentColor; }
+    .nav-stores svg { color: #14B8A6 !important; fill: currentColor; }
+    .nav-item.active svg { color: #22C55E !important; fill: currentColor !important; transform: scale(1.3); }
+    #select-products-modal .modal-content { background: var(--bg-color) !important; }
+    .search-input-wrap { position: relative; width: 100%; }
+    .search-input-wrap svg.search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none; }
+    .search-input-wrap input { padding-left: 2.25rem !important; box-sizing: border-box !important; }
+    .cart-progress-compact { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 500; }
+    .cart-progress-compact .progress-bar-wrap { flex: 1; height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
+    .cart-progress-compact .progress-bar-fill { height: 100%; background: var(--primary-color); transition: width 0.3s ease; }
+    .cart-badge-wrap { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 3.6rem; display: flex; justify-content: space-between; pointer-events: none; z-index: 10; }
+    .cart-badge { background: var(--primary-color); color: #fff; font-size: 11px; font-weight: 700; min-width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; line-height: 1; padding: 0 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.3); border: 2px solid var(--card-bg, #fff); box-sizing: border-box; }
+    .cart-badge.hidden { visibility: hidden; }
+    .purchased-divider { display: flex; align-items: center; gap: 0.75rem; margin: 1rem 0 0.75rem 0; }
+    .divider-line { flex: 1; height: 1px; background: var(--border-color); }
+    .divider-label { background: var(--success-color); color: white; padding: 0.25rem 0.875rem; border-radius: 1rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.8px; box-shadow: 0 2px 6px rgba(39, 170, 90, 0.25); }
+    #select-products-modal .select-add-btn, #select-products-modal .select-product-add-btn, #select-products-modal button[class*="add"] { color: white !important; }
+    #cart-add-btn { background-color: var(--primary-color) !important; }
+    .nav-two-lines { font-size: 0.65rem; line-height: 1.1; text-align: center; }
+    .voice-search-btn { position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; font-size: 1.2rem; padding: 0.25rem; z-index: 2; transition: color 0.2s, transform 0.2s; line-height: 1; display: flex; align-items: center; justify-content: center; }
+    .voice-search-btn:active { transform: translateY(-50%) scale(0.9); }
+    .voice-search-btn.listening { color: #e74c3c; animation: pulse-mic 1s infinite; }
+    @keyframes pulse-mic { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(1.25); } 100% { transform: translateY(-50%) scale(1); } }
+    .search-input-wrap input { padding-right: 2.5rem !important; }
+    .select-search-wrap input { padding-right: 2.5rem !important; }
+    .offline-indicator { display: flex; align-items: center; justify-content: center; cursor: default; transition: opacity 0.3s ease; }
+    .offline-indicator svg { width: 18px; height: 18px; }
+    .offline-indicator.online svg { color: #ffffff; }
+    .offline-indicator.offline svg { color: #EF4444; }
+    @keyframes offline-pulse-blink {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.88); }
+    }
+    .offline-indicator.offline { animation: offline-pulse-blink 1.2s ease-in-out infinite; }
+    .cart-segmented-row { display: flex; border-radius: 0.6rem; overflow: hidden; margin-bottom: 0.5rem; border: 1px solid var(--border-color); }
+    .cart-segmented-row button { flex: 1; border: none; padding: 0.625rem 0.5rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+    .cart-segmented-row button:active { opacity: 0.7; }
+    .cart-segmented-row .seg-shopping { background: var(--primary-color); color: #fff; border-right: 1px solid rgba(255,255,255,0.2); }
+    .cart-segmented-row .seg-finish { background: #c0392b; color: #fff; border-right: 1px solid rgba(255,255,255,0.2); }
+    .cart-segmented-row .seg-history { background: #7f8c8d; color: #fff; }
+    .shopping-mode-overlay { position: absolute; inset: 0; background: var(--bg-color); z-index: 1000; overflow-y: auto; padding-bottom: 4rem; }
+    .shopping-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); }
+    .shopping-back-btn { background: none; border: none; font-size: 1rem; color: var(--primary-color); cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; }
+    .shopping-filter-label { display: flex; align-items: center; gap: 0.375rem; font-size: 0.85rem; cursor: pointer; }
+    .shopping-filter-label input { width: 1rem; height: 1rem; accent-color: var(--primary-color); }
+    .shopping-progress-wrap { padding: 0.75rem 1rem; }
+    .shopping-progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.375rem; }
+    .shopping-progress-title { font-weight: 700; font-size: 1.05rem; }
+    .shopping-progress-percent { font-weight: 700; color: var(--primary-color); }
+    .shopping-progress-bar { height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
+    .shopping-progress-bar-fill { height: 100%; background: var(--primary-color); transition: width 0.3s ease; }
+    .shopping-category-stats { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0 1rem 0.75rem; }
+    .shopping-cat-stat { flex: 1 1 calc(50% - 0.25rem); min-width: 0; font-size: 1rem; }
+    .shopping-cat-stat-long { flex: 1 1 100%; }
+    .shopping-cat-stat-header { display: flex; justify-content: space-between; margin-bottom: 0.125rem; }
+    .shopping-cat-stat-bar { height: 3px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
+    .shopping-cat-stat-bar-fill { height: 100%; background: var(--primary-color); }
+    .shopping-search-wrap { margin: 0 1rem 0.5rem 1rem; position: relative; }
+    .shopping-search-wrap input { width: 100%; padding: 0.625rem 2.5rem 0.625rem 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.95rem; box-sizing: border-box; background: var(--card-bg); color: var(--text-color); }
+    .shopping-hint { text-align: center; font-size: 0.78rem; color: #888; padding: 0 1rem 0.5rem; }
+    .shopping-list { padding: 0 1rem; }
+    .shopping-card { display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem; margin-bottom: 0.5rem; background: var(--card-bg); border-radius: 0.75rem; border: 1px solid var(--border-color); transition: all 0.2s ease; position: relative; }
+    .shopping-card.purchased { opacity: 0.5; background: var(--border-color); }
+    .shopping-card.purchased .shopping-card-name { text-decoration: line-through; }
+    .shopping-card-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .shopping-card-info { flex: 1; min-width: 0; }
+    .shopping-card-name { font-weight: 700; font-size: 1.05rem; word-break: break-word; }
+    .shopping-card-qty { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.375rem; }
+    .shopping-qty-btn { width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid var(--border-color); background: var(--card-bg); font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-color); }
+    .shopping-qty-btn:active { background: var(--border-color); }
+    .shopping-qty-value { font-weight: 700; font-size: 1.1rem; min-width: 1.5rem; text-align: center; }
+    .shopping-check-btn { width: 3rem; height: 3rem; border-radius: 50%; border: 2px solid var(--border-color); background: transparent; color: var(--text-color); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
+    .shopping-check-btn.checked { background: var(--success-color); border-color: var(--success-color); color: #fff; }
+    .shopping-bottom-actions { position: absolute; bottom: 0; left: 0; right: 0; display: flex; gap: 0.5rem; padding: 0.75rem 1rem; background: var(--bg-color); border-top: 1px solid var(--border-color); z-index: 1001; }
+    .shopping-bottom-actions button { flex: 1; padding: 0.75rem; border-radius: 0.5rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; border: none; }
+    .shopping-bottom-actions .btn-reset { background: var(--border-color); color: var(--text-color); }
+    .shopping-bottom-actions .btn-finish { background: #c0392b; color: #fff; }
+    </style>
+    <style id="nf-hider">
+    body > a[href*="netlify.com"], body > div > a[href*="netlify.com"], [id*="netlify" i], [class*="netlify" i], [style*="z-index: 2147483647"], body > div[style*="fixed"][style*="right"] a[href*="netlify"], body > iframe[src*="netlify"], a[href*="www.netlify.com"], a[href*="netlify.com/products/"], body > div[style*="position: fixed"][style*="bottom"] { display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; width: 0 !important; height: 0 !important; overflow: hidden !important; }
+    </style>
+</head>
+<body>
+<div class="app-wrapper" id="app-wrapper-bg">
+    <header id="app-header">
+        <span>Сравнение цен в магазинах</span>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div id="offline-indicator" class="offline-indicator online" title="Подключено к интернету">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                    <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                    <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                </svg>
+            </div>
+            <button class="header-btn" onclick="openSettingsPage()" title="Опции"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0l-.06-.06a2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82V9a2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button>
+        </div>
+    </header>
+    <div class="main-container" id="main-container">
+        <div id="page-products" class="page active">
+            <div class="products-sticky-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h2 style="font-size: 1.35rem; font-weight: bold; margin: 0;" id="products-page-title">Товары</h2>
+                    <button class="stores-type-btn" id="btn-products-type-toggle" onclick="toggleProductsType()" style="padding: 0.375rem 0.625rem; font-size: 0.85rem;"><span class="btn-icon" id="toggle-btn-icon"></span><span id="toggle-btn-text">Лекарства</span></button>
+                </div>
+                <div class="search-input-wrap" style="margin-bottom: 0.5rem;">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="search-input" placeholder="Поиск товаров..." oninput="renderProducts()" style="margin: 0; width: 100%; padding-left: 2.25rem; box-sizing: border-box;">
+                    <button class="voice-search-btn" data-target="search-input" title="Голосовой поиск">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                    </button>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button class="btn" onclick="openAddProductModal()" style="flex: 1; white-space: nowrap;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Добавить</button>
+                    <button class="icon-btn" id="toggle-all-btn" onclick="toggleAllCategories()" title="Развернуть/Свернуть все вкладки"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+                    <button class="icon-btn" id="view-mode-btn" onclick="toggleCategoryViewMode()" title="Изменить вид отображения"><svg id="view-mode-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg></button>
+                    <button class="icon-btn" id="sort-mode-btn" onclick="toggleSortMode()" title="Сортировка категорий"><svg id="sort-mode-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="16" y2="6"></line><line x1="4" y1="12" x2="13" y2="12"></line><line x1="4" y1="18" x2="10" y2="18"></line><polyline points="18 9 21 12 18 15"></polyline></svg></button>
+                </div>
+            </div>
+            <div id="categories-list"></div>
+        </div>
+        <div id="page-cart" class="page">
+            <div class="cart-sticky-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h2 style="font-size: 1.35rem; font-weight: bold; margin: 0;">Корзина</h2>
+                    <div class="cart-type-toggle">
+                        <button class="cart-type-btn active" id="btn-cart-products" onclick="switchCartViewType('products')"><span class="btn-icon"></span><span>Товары</span></button>
+                        <button class="cart-type-btn" id="btn-cart-meds" onclick="switchCartViewType('meds')"><span class="btn-icon">💊</span><span>Лекарства</span></button>
+                    </div>
+                </div>
+                <div class="search-input-wrap" style="margin-bottom: 0.5rem;">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="cart-search-input" placeholder="Поиск по корзине..." oninput="filterCartItems()" style="margin: 0; width: 100%; padding-left: 2.25rem; box-sizing: border-box;">
+                    <button class="voice-search-btn" data-target="cart-search-input" title="Голосовой поиск">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                    </button>
+                </div>
+                <div class="cart-segmented-row">
+                    <button class="seg-shopping" onclick="toggleShoppingMode()">🛒 К покупкам</button>
+                    <button class="seg-finish" onclick="finishShopping()">✅ Завершить</button>
+                    <button class="seg-history" onclick="openPurchaseHistoryModal()">📜 История</button>
+                </div>
+                <button class="btn add-product-cart-btn" id="cart-add-btn" style="width: 100%; margin-bottom: 0.5rem; background-color: var(--primary-color);" onclick="openSelectProductsModal()">+ Добавить товар</button>
+                <div id="cart-progress-container" class="cart-progress-compact" style="margin-bottom: 0;">
+                    <span id="cart-progress-text">Собрано 0 из 0 товаров</span>
+                    <div class="progress-bar-wrap"><div id="cart-progress-bar" class="progress-bar-fill" style="width: 0%;"></div></div>
+                    <span id="cart-progress-percent">0%</span>
+                </div>
+            </div>
+            <div id="cart-items"></div>
+        </div>
+        <div id="page-prices" class="page">
+            <div class="prices-sticky-header">
+                <h2 style="font-size: 1.35rem; font-weight: bold; margin: 0; margin-bottom: 0.5rem;">Сравнение цен</h2>
+            </div>
+            <div id="stores-comparison"></div>
+        </div>
+        <div id="page-stores" class="page">
+            <div class="stores-sticky-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <h2 style="font-size: 1.35rem; font-weight: bold; margin: 0;" id="stores-page-title">Магазины</h2>
+                    <button class="btn" style="padding: 0.375rem 0.75rem; font-size: 0.85rem; white-space: nowrap;" onclick="openAddStoreModal()">+ Добавить</button>
+                </div>
+            </div>
+            <div id="stores-list"></div>
+        </div>
+        <div id="page-settings" class="page">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.875rem;">Опции и Настройки</h2>
+            <div class="card">
+                <h3 style="font-size: 1rem; margin-bottom: 0.625rem;">Режим отображения</h3>
+                <div class="theme-switch-container">
+                    <button class="theme-btn active" id="btn-light" onclick="setTheme('light')">️ Светлая</button>
+                    <button class="theme-btn" id="btn-dark" onclick="setTheme('dark')">🌙 Темная</button>
+                    <button class="theme-btn" id="btn-auto" onclick="setTheme('auto')">🔄 Авто</button>
+                </div>
+                <label style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.625rem; font-size: 0.85rem; color: #666; cursor: pointer;"><input type="checkbox" id="auto-theme-check" onchange="toggleAutoTheme(this.checked)" style="width: 1rem; height: 1rem; margin: 0; accent-color: var(--primary-color); cursor: pointer;"><span>Авто-тёмная тема после заката</span></label>
+                <div id="auto-theme-info" style="font-size: 0.75rem; color: #888; margin-top: 0.375rem; display: none;"></div>
+            </div>
+            <div class="card" style="margin-top: 0.93rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.375rem;">Резервное копирование</h3>
+                <p style="font-size: 0.85rem; color: #777; margin-bottom: 0.625rem;">Данные сохраняются автоматически. Вы также можете выгрузить или восстановить файл вручную.</p>
+                <div style="display: flex; gap: 0.625rem;">
+                    <button class="btn" onclick="exportData()" style="flex: 1;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Экспорт</button>
+                    <label class="btn" style="flex: 1; margin: 0; cursor: pointer; text-align: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> Импорт <input type="file" id="import-file" style="display: none;" onchange="importData(event)"></label>
+                </div>
+            </div>
+            <div class="card" style="margin-top: 0.93rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.375rem;">Файл сохранения</h3>
+                <p style="font-size: 0.85rem; color: #777; margin-bottom: 0.625rem;">Имя файла: <b>Save_SmartPrice.json</b></p>
+                <button class="btn" style="width: 100%; background: #475569;" onclick="openSavePathsModal()">📁 Где лежит файл сохранения</button>
+            </div>
+            <div class="card" style="margin-top: 0.93rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.625rem;">Размер шрифта</h3>
+                <select id="font-size-select" onchange="changeFontSize(this.value)"><option value="12px">Мелкий</option><option value="14px" selected>Стандартный</option><option value="16px">Крупный</option><option value="20px">Огромный</option></select>
+            </div>
+            <div class="card" style="margin-top: 0.93rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.625rem;">Цвет фона рабочего пространства</h3>
+                <div style="display: flex; gap: 0.5rem; align-items: center;"><button id="bg-color-btn" onclick="openBgPaletteModal()" style="width: 2.75rem; height: 2.5rem; border-radius: 0.5rem; border: 2px solid var(--border-color); cursor: pointer; background-color: #f4f6f8;"></button><button class="btn" style="background: #777; font-size: 0.93rem; padding: 0.625rem 0.875rem;" onclick="resetBgColor()">Стандартный цвет</button></div>
+            </div>
+            <div class="card" style="margin-top: 0.93rem;"><label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: 500;"><span>Объемный стиль</span><input type="checkbox" id="volumetric-checkbox" onchange="toggleVolumetricStyle(this.checked)" style="width: 1.25rem; height: 1.25rem; accent-color: var(--primary-color); margin: 0; cursor: pointer;"></label></div>
+            <div class="card" style="margin-top: 0.93rem;"><label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: 500;"><span>🛍️ Группировать корзину по категориям</span><input type="checkbox" id="cart-group-check" onchange="toggleCartGrouping(this.checked)" style="width: 1.25rem; height: 1.25rem; accent-color: var(--primary-color); margin: 0; cursor: pointer;"></label><p style="font-size: 0.78rem; color: #777; margin-top: 0.375rem;">Удобно ходить по отделам супермаркета</p></div>
+            <div class="card" style="margin-top: 0.93rem;">
+                <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: 500;">
+                    <span>📳 Виброотклик при действиях</span>
+                    <input type="checkbox" id="haptic-feedback-check" onchange="toggleHapticFeedback(this.checked)" style="width: 1.25rem; height: 1.25rem; accent-color: var(--primary-color); margin: 0; cursor: pointer;">
+                </label>
+                <p style="font-size: 0.78rem; color: #777; margin-top: 0.375rem;">Короткая вибрация при добавлении в корзину, удалении и сохранении</p>
+            </div>
+            <div class="card" style="margin-top: 0.93rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.625rem;">🎨 Цвет предупреждения о нескольких магазинах</h3>
+                <div style="display: flex; gap: 0.5rem; align-items: center;"><button id="multi-store-color-btn" onclick="openMultiStoreColorPalette()" style="width: 2.75rem; height: 2.5rem; border-radius: 0.5rem; border: 2px solid var(--border-color); cursor: pointer; background-color: #d93838;"></button><button class="btn" style="background: #777; font-size: 0.93rem; padding: 0.625rem 0.875rem;" onclick="resetMultiStoreColor()">Стандартный</button></div>
+            </div>
+            <div class="card" style="margin-top: 0.93rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.625rem;">🎨 Цвет кнопки «+ Добавить товар» в корзине</h3>
+                <div style="display: flex; gap: 0.5rem; align-items: center;"><button id="add-product-btn-color-btn" onclick="openAddProductBtnColorPalette()" style="width: 2.75rem; height: 2.5rem; border-radius: 0.5rem; border: 2px solid var(--border-color); cursor: pointer; background-color: var(--primary-color);"></button><button class="btn" style="background: #777; font-size: 0.93rem; padding: 0.625rem 0.875rem;" onclick="resetAddProductBtnColor()">Стандартный</button></div>
+            </div>
+        </div>
+    </div>
+    <div id="category-modal" class="modal-overlay" onclick="closeCategoryModalOnOutside(event)"><div class="modal-content"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem; gap: 0.5rem;"><h3 id="category-modal-title" style="font-size: 1.14rem; font-weight: bold; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></h3><button class="icon-btn" onclick="toggleCategoryModalViewMode()"><svg id="category-modal-view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg></button><button onclick="closeCategoryModal()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer; color: var(--text-color); flex-shrink: 0;">✕</button></div><div id="category-modal-products" style="display: flex; flex-direction: column; gap: 0.5rem;"></div></div></div>
+    <div id="save-paths-modal" class="modal-overlay" onclick="closeSavePathsModalOnOutside(event)"><div class="modal-content" style="max-width: 360px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;"><h3 style="font-size: 1rem; font-weight: bold;">Пути файла сохранения</h3><button onclick="closeSavePathsModal()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer;">✕</button></div><p style="font-size: 0.85rem; color: #777; margin-bottom: 0.75rem;">Файл данных называется: <b>Save_SmartPrice.json</b></p><div style="display: flex; flex-direction: column; gap: 0.75rem;"><div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 0.625rem;"><div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 0.25rem;"> Windows:</div><div style="font-size: 0.75rem; word-break: break-all; color: #666; margin-bottom: 0.375rem;">C:\Users\ИмяПользователя\AppData\Local\SmartPrice\</div><div style="display: flex; gap: 0.375rem;"><button class="btn" style="flex: 1; padding: 0.375rem 0.5rem; font-size: 0.75rem;" onclick="openOrSaveToFolder('win')">📂 Открыть / Сохранить</button><button class="btn" style="flex: 1; padding: 0.375rem 0.5rem; font-size: 0.75rem; background: #475569;" onclick="copyToClipboard('C:\\Users\\ИмяПользователя\\AppData\\Local\\SmartPrice\\')">📋 Копировать</button></div></div><div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 0.625rem;"><div style="font-weight: bold; font-size: 0.85rem; margin-bottom: 0.25rem;">📱 Android:</div><div style="font-size: 0.75rem; word-break: break-all; color: #666; margin-bottom: 0.375rem;">/storage/emulated/0/Download/</div><div style="display: flex; gap: 0.375rem;"><button class="btn" style="flex: 1; padding: 0.375rem 0.5rem; font-size: 0.75rem;" onclick="openOrSaveToFolder('android')">📂 Открыть / Сохранить</button><button class="btn" style="flex: 1; padding: 0.375rem 0.5rem; font-size: 0.75rem; background: #475569;" onclick="copyToClipboard('/storage/emulated/0/Download/')">📋 Копировать</button></div></div></div></div></div>
+    <div id="fullscreen-viewer" onclick="closeFullscreenPhoto()"><img id="fullscreen-img" src="" alt=""></div>
+    <div id="bg-palette-modal" class="modal-overlay" onclick="closeBgPaletteModalOnOutside(event)"><div class="modal-content" style="max-width: 320px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;"><h3 style="font-size: 1rem; font-weight: bold;">Цвет фона</h3><button onclick="closeBgPaletteModal()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer;">✕</button></div><div class="color-picker-grid" id="bg-palette-grid"></div><button class="btn" style="width: 100%; margin-top: 0.375rem; background: #555;" onclick="document.getElementById('hidden-custom-bg').click()">Свой цвет</button><input type="color" id="hidden-custom-bg" style="display:none;" onchange="changeBgColor(this.value)"></div></div>
+    <div id="multi-store-palette-modal" class="modal-overlay" onclick="closeMultiStoreColorPaletteOnOutside(event)"><div class="modal-content" style="max-width: 320px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;"><h3 style="font-size: 1rem; font-weight: bold;">Цвет предупреждения</h3><button onclick="closeMultiStoreColorPalette()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer;">✕</button></div><div class="color-picker-grid" id="multi-store-palette-grid"></div><button class="btn" style="width: 100%; margin-top: 0.375rem; background: #555;" onclick="document.getElementById('hidden-custom-multi').click()">Свой цвет</button><input type="color" id="hidden-custom-multi" style="display:none;" onchange="changeMultiStoreColor(this.value)"></div></div>
+    <div id="add-product-btn-palette-modal" class="modal-overlay" onclick="closeAddProductBtnPaletteOnOutside(event)"><div class="modal-content" style="max-width: 320px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;"><h3 style="font-size: 1rem; font-weight: bold;">Цвет кнопки «+ Добавить товар»</h3><button onclick="closeAddProductBtnColorPalette()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer;">✕</button></div><div class="color-picker-grid" id="add-product-btn-palette-grid"></div><button class="btn" style="width: 100%; margin-top: 0.375rem; background: #555;" onclick="document.getElementById('hidden-custom-add-btn').click()">Свой цвет</button><input type="color" id="hidden-custom-add-btn" style="display:none;" onchange="changeAddProductBtnColor(this.value)"></div></div>
+    <div id="gps-error-modal" class="modal-overlay" onclick="closeGpsErrorModalOnOutside(event)"><div class="modal-content" style="max-width: 340px;"><div class="gps-error-icon">📍</div><div class="gps-error-title" id="gps-error-title">Нет доступа к геолокации</div><div class="gps-error-message" id="gps-error-message">Разрешите доступ к местоположению в настройках телефона, чтобы использовать эту функцию.</div><div class="gps-error-instruction" id="gps-error-instruction"><strong>Как разрешить доступ:</strong><ol><li>Откройте <b>Настройки</b> телефона</li><li>Перейдите в <b>Приложения</b> → ваш браузер</li><li>Нажмите <b>Разрешения</b> → <b>Местоположение</b></li><li>Выберите <b>«Разрешить»</b></li></ol></div><div class="gps-error-buttons"><button class="btn btn-secondary" onclick="closeGpsErrorModal()">Понятно</button><button class="btn" onclick="tryOpenSettings()">⚙️ Открыть настройки</button></div></div></div>
+    <div id="product-modal" class="modal-overlay" onclick="closeModalOnOutside(event)"><div class="modal-content"><div class="product-modal-top"><button class="close-modal-btn" onclick="closeModal()">✕</button><img id="modal-prod-img" src="" style="width: 6.25rem; height: 6.25rem; border-radius: 0.75rem; object-fit: cover; border: 1px solid var(--border-color); flex-shrink: 0; cursor: pointer;" onclick="openFullscreenPhoto(this.src)" alt=""><div class="product-modal-info"><input type="text" id="modal-prod-name" class="prod-name-input" onchange="updateProductName()"><div class="prod-meta-row"><span id="modal-prod-info-cat">Категория: —</span><span style="color: #bbb;">·</span><span id="modal-prod-info-unit">Единица: —</span></div><div class="product-modal-pencil-row"><span class="pencil-label">Редактировать</span><button class="edit-pencil-btn" onclick="openEditProductModal(currentModalProductId)" title="Редактировать товар"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button></div><div class="prod-best-price" id="modal-prod-info-best">Лучшая цена: —</div></div></div><h4 style="font-size: 0.93rem; margin-bottom: 0.625rem;">Цены в магазинах</h4><div id="modal-prices-list"></div><div style="display: flex; gap: 0.625rem; margin-top: 0.93rem;"><button class="btn" id="btn-add-to-cart" style="flex: 1; background-color: var(--primary-color); max-width: 55%;" onclick="addToCartFromModal(event)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg> В корзину</button><button class="btn" style="background: #e57373; flex: 1; max-width: 40%;" onclick="deleteProductFromModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> Удалить</button></div></div></div>
+    <div id="price-history-modal" class="modal-overlay" onclick="closeHistoryModalOnOutside(event)"><div class="modal-content" style="max-width: 340px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;"><h3 id="history-modal-title" style="font-size: 1rem; font-weight: bold;">История цен</h3><button onclick="closeHistoryModal()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer;">✕</button></div><div id="history-modal-content" style="max-height: 50vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;"></div></div></div>
+    <div id="select-products-modal" class="modal-overlay" onclick="closeSelectModalOnOutside(event)">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;">
+                <h3 id="select-products-title" style="font-size: 1.14rem; font-weight: bold;">Выберите товар</h3>
+                <button onclick="closeSelectProductsModal()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer; color: var(--text-color);">✕</button>
+            </div>
+            <div class="search-input-wrap select-search-wrap" style="margin-bottom: 0.875rem;">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="select-products-search-input" placeholder="Поиск товара..." oninput="if(typeof filterSelectProducts==='function')filterSelectProducts()" style="margin: 0; width: 100%; padding-left: 2.25rem; box-sizing: border-box;">
+                <button class="voice-search-btn" data-target="select-products-search-input" title="Голосовой поиск">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                </button>
+            </div>
+            <div id="select-products-list" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        </div>
+    </div>
+    <div id="add-product-modal" class="modal-overlay"><div class="modal-content"><h3 style="margin-bottom: 0.875rem;" id="add-prod-title">Новый товар</h3><div class="new-product-top"><div class="new-product-img-box"><img id="new-prod-preview" src="" alt=""><span class="placeholder" id="new-prod-placeholder">️</span></div><div class="new-product-right"><div class="new-product-photo-btns"><label class="btn-3d-green" title="Сфотографировать"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><input type="file" accept="image/*" capture="environment" id="cam-input" style="display:none;" onchange="handleProductImage(event)"></label><label class="btn-3d-dark" title="Выбрать из файла"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg><input type="file" accept="image/*" id="file-input" style="display:none;" onchange="handleProductImage(event)"></label></div><div class="new-product-name-row"><input type="text" id="new-name" placeholder="Название товара" style="margin: 0;"></div></div></div><div style="display: flex; gap: 0.625rem;"><div style="flex: 2;"><label style="font-size: 0.8rem;">Категория</label><select id="new-category"></select></div><div style="flex: 1;"><label style="font-size: 0.8rem;">Единица</label><select id="new-unit"><option value="шт">шт</option><option value="кг">кг</option><option value="г">г</option><option value="л">л</option><option value="мл">мл</option><option value="упаковка">упаковка</option><option value="пачка">пачка</option></select></div></div><div id="new-product-prices-block" style="margin-top: 0.625rem;"><label id="new-prices-label" style="font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 0.375rem;">💰 Цены в магазинах (необязательно)</label><div id="new-product-prices-list"></div></div><div style="display: flex; gap: 0.625rem; margin-top: 0.93rem;"><button class="btn" style="flex: 1;" onclick="saveNewProduct()">Добавить</button><button class="btn" style="background: #ccc; color: #333;" onclick="closeAddProductModal()">Отмена</button></div></div></div>
+    <div id="edit-product-modal" class="modal-overlay"><div class="modal-content"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;"><h3 style="font-size: 1.14rem; font-weight: bold;">Редактировать товар</h3><button onclick="closeEditProductModal()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer;"></button></div><div class="new-product-top"><div class="new-product-img-box"><img id="edit-prod-preview" src="" alt=""><span class="placeholder" id="edit-prod-placeholder">🖼️</span></div><div class="new-product-right"><div class="new-product-photo-btns"><label class="btn-3d-green" title="Сфотографировать"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg><input type="file" accept="image/*" capture="environment" id="edit-cam-input" style="display:none;" onchange="handleEditProductImage(event)"></label><label class="btn-3d-dark" title="Выбрать из файла"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg><input type="file" accept="image/*" id="edit-file-input" style="display:none;" onchange="handleEditProductImage(event)"></label></div><div class="new-product-name-row"><input type="text" id="edit-name" placeholder="Название товара" style="margin: 0;"></div></div></div><div style="display: flex; gap: 0.625rem;"><div style="flex: 2;"><label style="font-size: 0.8rem;">Категория</label><select id="edit-category"></select></div><div style="flex: 1;"><label style="font-size: 0.8rem;">Единица</label><select id="edit-unit"><option value="шт">шт</option><option value="кг">кг</option><option value="г">г</option><option value="л">л</option><option value="мл">мл</option><option value="упаковка">упаковка</option><option value="пачка">пачка</option></select></div></div><div style="display: flex; gap: 0.625rem; margin-top: 0.93rem;"><button class="btn" style="flex: 1;" onclick="saveEditedProduct()">Сохранить</button><button class="btn" style="background: #ccc; color: #333;" onclick="closeEditProductModal()">Отмена</button></div></div></div>
+    <div id="add-store-modal" class="modal-overlay"><div class="modal-content"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;"><h3 style="font-size: 1.15rem; font-weight: 600;" id="add-store-modal-title">Новый магазин</h3><button onclick="closeAddStoreModal()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer;">✕</button></div><div class="store-modal-photo-row"><div class="store-modal-photo-box"><img id="new-store-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;" alt=""><span id="new-store-placeholder" style="font-size: 1.75rem;">🖼️</span></div><div class="store-modal-photo-btns"><label class="store-photo-btn store-photo-btn-camera" style="cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>Сделать фото<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleStoreImage(event, 'add')"></label><label class="store-photo-btn store-photo-btn-gallery" style="cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>Выбрать из галереи<input type="file" accept="image/*" style="display:none;" onchange="handleStoreImage(event, 'add')"></label></div></div><label style="font-size: 0.95rem; font-weight: 400;">Название магазина:</label><div style="position: relative;"><input type="text" id="new-store-name" placeholder="Например, Гиппо" maxlength="50" oninput="updateStoreNameCounter('add')"><span class="store-name-counter" id="add-store-name-counter">0/50</span></div><label style="font-size: 0.95rem; font-weight: 400;">Адрес магазина:</label><div class="store-address-row"><svg class="store-address-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7" opacity="0.5"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line></svg><input type="text" id="new-store-address" placeholder="г. Минск, ул. Примерная, 1" class="store-address-input"><button class="store-gps-btn" type="button" onclick="getGPSPosition('new-store-address')" title="Определить местоположение"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7" opacity="0.5"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line></svg></button></div><div class="store-color-row-inline"><span class="store-color-label-inline">Цвет значка</span><div class="store-color-big-circle" id="add-store-color-indicator" onclick="openStoreColorModal('add')"></div></div><input type="color" id="add-store-custom-color" value="#00875a" style="display:none;" onchange="selectCustomStoreColor(this.value, 'add')"><div class="store-modal-actions"><button class="btn store-save-btn" onclick="addStore()">Добавить</button><button class="btn store-cancel-btn" onclick="closeAddStoreModal()">Отмена</button></div></div></div>
+    <div id="edit-store-modal" class="modal-overlay"><div class="modal-content"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;"><h3 style="font-size: 1.15rem; font-weight: 600;" id="edit-store-modal-title">Редактировать магазин</h3><button onclick="closeEditStoreModal()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer;">✕</button></div><div class="store-modal-photo-row"><div class="store-modal-photo-box"><img id="edit-store-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;" alt=""><span id="edit-store-placeholder" style="font-size: 1.75rem;">️</span></div><div class="store-modal-photo-btns"><label class="store-photo-btn store-photo-btn-camera" style="cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>Сделать фото<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleStoreImage(event, 'edit')"></label><label class="store-photo-btn store-photo-btn-gallery" style="cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>Выбрать из галереи<input type="file" accept="image/*" style="display:none;" onchange="handleStoreImage(event, 'edit')"></label></div></div><label style="font-size: 0.95rem; font-weight: 400;">Название магазина:</label><div style="position: relative;"><input type="text" id="edit-store-name" maxlength="50" oninput="updateStoreNameCounter('edit')"><span class="store-name-counter" id="edit-store-name-counter">0/50</span></div><label style="font-size: 0.95rem; font-weight: 400;">Адрес магазина:</label><div class="store-address-row"><svg class="store-address-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7" opacity="0.5"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line></svg><input type="text" id="edit-store-address" placeholder="Адрес магазина" class="store-address-input"><button class="store-gps-btn" type="button" onclick="getGPSPosition('edit-store-address')" title="Определить местоположение"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7" opacity="0.5"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line></svg></button></div><div class="store-color-row-inline"><span class="store-color-label-inline">Цвет значка</span><div class="store-color-big-circle" id="edit-store-color-indicator" onclick="openStoreColorModal('edit')"></div></div><input type="color" id="edit-store-custom-color" style="display:none;" onchange="selectCustomStoreColor(this.value, 'edit')"><div class="store-modal-actions"><button class="btn store-save-btn" onclick="saveEditedStore()">Сохранить</button><button class="btn store-cancel-btn" onclick="closeEditStoreModal()">Отмена</button></div></div></div>
+    <nav id="bottom-nav">
+        <button class="nav-item active nav-products" onclick="switchPage('products', this)"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 10h2v7H7zm4-3h2v10h-2zm4 5h2v5h-2z"/></svg><span class="nav-two-lines">Товары/<br>Лекарства</span></button>
+        <button class="nav-item nav-cart" id="nav-cart-btn" onclick="switchPage('cart', this)" style="position: relative;"><svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg><div class="cart-badge-wrap" id="cart-badge-wrap"><div class="cart-badge hidden" id="cart-badge-products">0</div><div class="cart-badge hidden" id="cart-badge-meds">0</div></div><span class="nav-two-lines">Список<br>покупок</span></button>
+        <button class="nav-item nav-prices" id="nav-prices-btn" onclick="switchPage('prices', this)"><svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg><span class="nav-two-lines">Лучшие<br>цены</span></button>
+        <button class="nav-item nav-stores" onclick="switchPage('stores', this)"><svg viewBox="0 0 24 24"><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg><span class="nav-two-lines">Магазины/<br>Аптеки</span></button>
+    </nav>
+    <div id="store-color-picker-modal" class="modal-overlay" onclick="closeStoreColorModalOnOutside(event)"><div class="modal-content" style="max-width: 320px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem;"><h3 style="font-size: 1.15rem; font-weight: 600;">Выбор цвета</h3><button onclick="closeStoreColorModal()" style="background: none; border: none; font-size: 1.14rem; cursor: pointer;"></button></div><div class="color-picker-grid" id="store-color-picker-grid"></div><button class="btn store-custom-color-btn" onclick="document.getElementById('store-color-picker-custom').click()" style="width: 100%; padding: 0.5rem; font-size: 0.85rem; background: #555; margin-top: 0.25rem;">Свой цвет</button><input type="color" id="store-color-picker-custom" style="display:none;" onchange="selectCustomStoreColor(this.value, storeColorPickerMode)"></div></div>
+    <div id="app-toast"></div>
+</div>
+<script src="data.js"></script>
+<script src="storage.js"></script>
+<script src="utils.js"></script>
+<script src="swipe.js"></script>
+<script src="ui.js"></script>
+<script src="modals.js"></script>
+<script src="settings.js"></script>
+<script src="products.js"></script>
+<script src="stores.js"></script>
+<script src="cart.js"></script>
+<script src="voice-search.js"></script>
+</body>
+</html>

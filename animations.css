@@ -1,0 +1,61 @@
+nav.nav-bounce { animation: navBounce 0.5s ease; }
+
+@keyframes navBounce {
+    0% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    70% { transform: translateY(-3px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+@keyframes slideInFromRightFog { 0% { transform: translate3d(80px, 0, 0); opacity: 0; } 100% { transform: translate3d(0, 0, 0); opacity: 1; } }
+
+@keyframes slideInFromLeftFog { 0% { transform: translate3d(-80px, 0, 0); opacity: 0; } 100% { transform: translate3d(0, 0, 0); opacity: 1; } }
+
+@keyframes slideOutToLeftFog { 0% { transform: translate3d(0, 0, 0); opacity: 1; } 100% { transform: translate3d(-80px, 0, 0); opacity: 0; } }
+
+@keyframes slideOutToRightFog { 0% { transform: translate3d(0, 0, 0); opacity: 1; } 100% { transform: translate3d(80px, 0, 0); opacity: 0; } }
+
+.animate-swipe-left-in { animation: slideInFromRightFog 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+.animate-swipe-right-in { animation: slideInFromLeftFog 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+.animate-swipe-left-out { animation: slideOutToLeftFog 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+.animate-swipe-right-out { animation: slideOutToRightFog 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+.curtain-item { animation: curtainSlideFog 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+
+.curtain-item-out { animation: curtainSlideOutFog 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@keyframes curtainSlideFog { 0% { transform: translate3d(0, 30px, 0); opacity: 0; } 100% { transform: translate3d(0, 0, 0); opacity: 1; } }
+
+@keyframes curtainSlideOutFog { 0% { transform: translate3d(0, 0, 0); opacity: 1; } 100% { transform: translate3d(0, 30px, 0); opacity: 0; } }
+
+@keyframes swipeRightFadeOut {
+    0% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; max-height: 100px; margin-bottom: 0.75rem; }
+    50% { transform: translate3d(80px, 0, 0) scale(0.85); opacity: 0.5; }
+    100% { transform: translate3d(200px, 0, 0) scale(0.5); opacity: 0; max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
+}
+
+.flying-to-trash {
+    animation: swipeRightFadeOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transform-origin: right center;
+    overflow: hidden;
+}
+
+.fly-to-cart-anim {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    border-radius: 50%;
+    background: var(--primary-color);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.3);
+    opacity: 1 !important;
+}
+
+@keyframes warningPulse {
+    0%, 100% { box-shadow: 0 4px 12px rgba(217, 56, 56, 0.3); }
+    50% { box-shadow: 0 4px 18px rgba(217, 56, 56, 0.5); }
+}
