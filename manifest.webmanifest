@@ -3,15 +3,15 @@
   "short_name": "SmartPrice",
   "description": "Список покупок со сравнением цен в магазинах и аптеках",
   "lang": "ru",
-  "start_url": "/smartprice-ceny/",
-  "scope": "/smartprice-ceny/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#EDF7EB",
   "theme_color": "#4EAE64",
   "icons": [
-    { "src": "/smartprice-ceny/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/smartprice-ceny/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/smartprice-ceny/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

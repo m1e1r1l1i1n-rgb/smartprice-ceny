@@ -1,3 +1,17 @@
+/* =============================================================
+SmartPrice — data.js
+Справочники, стартовые данные, вспомогательные функции.
+ФУНДАМЕНТ: версия приложения, версия схемы данных, генератор ID.
+============================================================= */
+
+const APP_VERSION = '1.0.0';          // личная стабильная версия
+const SCHEMA_VERSION = 1;             // поколение структуры данных
+
+/* Универсальный генератор коротких уникальных ID */
+function genId(prefix) {
+  return (prefix || 'id') + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+}
+
 const categories = [
   { id: 'grocery', name: 'Бакалея', icon: '<img src="images/categories/bakaleya.png" alt="Бакалея" class="cat-ico">' },
   { id: 'chem', name: 'Бытовая химия', icon: '<img src="images/categories/bytovaya-himiya.png" alt="Бытовая химия" class="cat-ico">' },
@@ -23,22 +37,24 @@ const medCategories = [
 ];
 
 let db = {
+  schemaVersion: SCHEMA_VERSION,
+  activityLog: [],
   products: [],
   stores: [
-    { name: 'Евроопт', color: '#00875a', image: '', address: '', type: 'store' },
-    { name: 'Соседи', color: '#3b82f6', image: '', address: '', type: 'store' },
-    { name: 'Корона', color: '#d93838', image: '', address: '', type: 'store' },
-    { name: 'мир', color: '#f59e0b', image: '', address: '', type: 'store' }
+    { id: genId('st'), name: 'Евроопт', color: '#00875a', image: '', address: '', type: 'store' },
+    { id: genId('st'), name: 'Соседи', color: '#3b82f6', image: '', address: '', type: 'store' },
+    { id: genId('st'), name: 'Корона', color: '#d93838', image: '', address: '', type: 'store' },
+    { id: genId('st'), name: 'мир', color: '#f59e0b', image: '', address: '', type: 'store' }
   ],
   pharmacies: [
-    { name: 'Аптека 36.6', color: '#00875a', image: '', address: '', type: 'pharmacy' },
-    { name: 'Планета Здоровья', color: '#3b82f6', image: '', address: '', type: 'pharmacy' }
+    { id: genId('ph'), name: 'Аптека 36.6', color: '#00875a', image: '', address: '', type: 'pharmacy' },
+    { id: genId('ph'), name: 'Планета Здоровья', color: '#3b82f6', image: '', address: '', type: 'pharmacy' }
   ],
   cart: [],
   collapsedCategories: {},
   settings: {
     darkMode: false, autoTheme: false, fontSize: '14px', bgColor: '', volumetric: false,
-    categoryViewMode: 'list', categoryModalViewMode: 'list', categorySortMode: 'default',
+    categoryViewMode: 'list', categoryModalViewMode: 'list',
     cartGroupByCategory: true, multiStoreColor: '#d93838', addProductBtnColor: '#27AA5A'
   }
 };
@@ -63,9 +79,6 @@ const swipeablePages = ['products', 'cart', 'prices', 'stores'];
 const PAGE_GAP = 8;
 const ICON_GRID = '<rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect>';
 const ICON_LIST = '<line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="4" cy="6" r="1.5" fill="currentColor"></circle><circle cx="4" cy="12" r="1.5" fill="currentColor"></circle><circle cx="4" cy="18" r="1.5" fill="currentColor"></circle>';
-const ICON_SORT_ALPHA = '<text x="12" y="16" font-size="12" font-weight="bold" fill="currentColor" stroke="none" text-anchor="middle" font-family="Arial">А→Я</text>';
-const ICON_SORT_FREQ = '<rect x="3" y="15" width="4" height="6"></rect><rect x="10" y="10" width="4" height="11"></rect><rect x="17" y="5" width="4" height="16"></rect>';
-const ICON_SORT_DEFAULT = '<line x1="4" y1="6" x2="16" y2="6"></line><line x1="4" y1="12" x2="13" y2="12"></line><line x1="4" y1="18" x2="10" y2="18"></line><polyline points="18 9 21 12 18 15"></polyline>';
 let currentProductsType = 'products';
 const productUnits = ['шт', 'кг', 'л', 'упаковка', 'пачка', 'доз', 'порция'];
 const medUnits = ['пачка', 'упаковка', 'мл', 'шт'];
